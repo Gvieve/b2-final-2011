@@ -8,7 +8,7 @@ RSpec.describe "As a visitor when I visit the flight's show page" do
     @bob = @flt1.passengers.create!(name: "Bob Krause", age: 54)
     @cody = @flt1.passengers.create!(name: "Cody Krause", age: 16)
     @brad = @flt1.passengers.create!(name: "Brad Barajas", age: 18)
-    @eddie = @flt2.passengers.create!(name: "Eddie Anderson", age: 25)
+    @eddie = Passenger.create!(name: "Eddie Anderson", age: 25)
   end
 
   it "Then I see the flight's number, date, time, departure city, and arrival city" do
@@ -53,5 +53,50 @@ RSpec.describe "As a visitor when I visit the flight's show page" do
     visit flight_path(@flt1)
 
     expect(page).to have_content("Average age of adult passengers: #{@flt1.average_age_adult_passengers.round(2)}")
+  end
+
+  it "Next to each passengers name I see a button to remove that passenger from that flight" do
+    visit flight_path(@flt1)
+
+    within ".passengers" do
+      expect(page.all('.button_to', count: 3))
+    end
+  end
+
+  it "When I click on the 'Remove Passenger from Flight' button I return to the flight's show page and that passenger is not listed" do
+    @flt1.passengers << @eddie
+    visit flight_path(@flt1)
+
+    within ".passengers" do
+      expect(page).to have_content("#{@eddie.name}")
+
+      within "#passenger-#{@eddie.id}" do
+        expect(page).to have_button("Remove Passenger from Flight")
+        click_button "Remove Passenger from Flight"
+      end
+
+      expect(current_path).to eq("/flights/#{@flt1.id}")
+      expect(page).to_not have_content("#{@eddie.name}")
+    end
+  end
+
+  it "When I remove a passenger from a single flight that passenger record is not deleted or removed from other flights" do
+    @flt1.passengers << @eddie
+    @flt2.passengers << @eddie
+
+    visit flight_path(@flt1)
+
+    within ".passengers" do
+      within "#passenger-#{@eddie.id}" do
+        click_button "Remove Passenger from Flight"
+      end
+      expect(current_path).to eq("/flights/#{@flt1.id}")
+      expect(page).to_not have_content("#{@eddie.name}")
+    end
+
+    visit flight_path(@flt2)
+     within ".passengers" do
+       expect(page).to have_content("#{@eddie.name}")
+     end
   end
 end
