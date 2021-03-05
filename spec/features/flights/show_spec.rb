@@ -41,7 +41,17 @@ RSpec.describe "As a visitor when I visit the flight's show page" do
     end
   end
 
-  it "And I see the average age of all adult passengers on the flight" do
+  it "And I do not see the names of passengers that are not on this flight" do
+    visit flight_path(@flt1)
 
+    within ".passengers" do
+      expect(page).to_not have_content("#{@eddie.name}")
+    end
+  end
+
+  it "And I see the average age of all adult passengers on the flight" do
+    visit flight_path(@flt1)
+
+    expect(page).to have_content("Average age of adult passengers: #{@flt1.average_age_adult_passengers.round(2)}")
   end
 end

@@ -11,4 +11,8 @@ class Flight < ApplicationRecord
   def adult_passengers
     passengers.age_18_and_over
   end
+
+  def average_age_adult_passengers
+    adult_passengers.average(:age)
+  end
 end

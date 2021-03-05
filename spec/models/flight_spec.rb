@@ -32,22 +32,31 @@ RSpec.describe Flight, type: :model do
   end
 
   describe 'instance methods' do
+    before :each do
+      @flt1 = Flight.create!(number: 1776, date: "04/05/2021", time: "11:00 am", departure_city: "Denver", arrival_city: "Chicago")
+      @flt2 = Flight.create!(number: 145, date: "04/06/2021", time: "1:00 pm", departure_city: "Seattle", arrival_city: "Denver")
+      @kim = @flt1.passengers.create!(name: "Kim Krause", age: 52)
+      @bob = @flt1.passengers.create!(name: "Bob Krause", age: 54)
+      @cody = @flt1.passengers.create!(name: "Cody Krause", age: 16)
+      @brad = @flt1.passengers.create!(name: "Brad Barajas", age: 18)
+      @mica = @flt1.passengers.create!(name: "Mica Barajas", age: 43)
+      @eddie = @flt2.passengers.create!(name: "Eddie Anderson", age: 25)
+    end
     describe 'adult_passengers' do
       it 'returns passengers for a flight that are 18 or over' do
-        flt1 = Flight.create!(number: 1776, date: "04/05/2021", time: "11:00 am", departure_city: "Denver", arrival_city: "Chicago")
-        flt2 = Flight.create!(number: 145, date: "04/06/2021", time: "1:00 pm", departure_city: "Seattle", arrival_city: "Denver")
-        kim = flt1.passengers.create!(name: "Kim Krause", age: 52)
-        bob = flt1.passengers.create!(name: "Bob Krause", age: 54)
-        cody = flt1.passengers.create!(name: "Cody Krause", age: 16)
-        brad = flt1.passengers.create!(name: "Brad Barajas", age: 18)
-        eddie = flt2.passengers.create!(name: "Eddie Anderson", age: 25)
+        expect(@flt1.adult_passengers.count).to eq(4)
+        expect(@flt1.adult_passengers.first.name).to eq("#{@kim.name}")
+        expect(@flt1.adult_passengers.second.name).to eq("#{@bob.name}")
+        expect(@flt1.adult_passengers.third.name).to eq("#{@brad.name}")
+        expect(@flt1.adult_passengers.last.name).to eq("#{@mica.name}")
+        expect(@flt1.adult_passengers.include?(@cody)).to eq(false)
+        expect(@flt1.adult_passengers.include?(@eddie)).to eq(false)
+      end
+    end
 
-        expect(flt1.adult_passengers.count).to eq(3)
-        expect(flt1.adult_passengers.first.name).to eq("#{kim.name}")
-        expect(flt1.adult_passengers.second.name).to eq("#{bob.name}")
-        expect(flt1.adult_passengers.last.name).to eq("#{brad.name}")
-        expect(flt1.adult_passengers.include?(cody)).to eq(false)
-        expect(flt1.adult_passengers.include?(eddie)).to eq(false)
+    describe 'average_age_adult_passengers' do
+      it 'returns the average age of all adult passengers for a flight' do
+        expect(@flt1.average_age_adult_passengers).to eq(0.4175e2)
       end
     end
   end
