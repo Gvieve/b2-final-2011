@@ -35,4 +35,17 @@ RSpec.describe "As a visitor when I visit the flights index page" do
     expect(@flt1.arrival_city).to appear_before(@flt3.arrival_city)
     expect(@flt3.departure_city).to appear_before(@flt2.departure_city)
   end
+
+  it "And each flight number is a link to that flight's show page" do
+    visit flights_path
+
+    expect(page.all('a', count: 4))
+
+    within "#flight-#{@flt1.id}" do
+      expect(page).to have_link("Flight num. #{@flt1.number}")
+      click_link "Flight num. #{@flt1.number}"
+    end
+
+    expect(current_path).to eq("/flights/#{@flt1.id}")
+  end
 end

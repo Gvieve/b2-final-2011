@@ -12,5 +12,5 @@
         </div>
       <% end  %>
     </ul>
-  <h3>Average age of adult passengers: <%= @flight.average_age_adult_passengers.round(2) %></h3>
+  <h3>Average age of adult passengers: <%= @flight.average_age_adult_passengers.round(2) if !@flight.adult_passengers.empty? %></h3>
 </section>

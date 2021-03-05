@@ -13,6 +13,9 @@ class Flight < ApplicationRecord
   end
 
   def average_age_adult_passengers
-    adult_passengers.average(:age)
+    # begin
+      adult_passengers.average(:age)
+    # rescue
+    #   'no passengers on this flight yet'
   end
 end
