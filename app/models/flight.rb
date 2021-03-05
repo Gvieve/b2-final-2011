@@ -7,4 +7,8 @@ class Flight < ApplicationRecord
   def self.ordered_by_departure_city
     order(:departure_city, :arrival_city)
   end
+
+  def adult_passengers
+    passengers.age_18_and_over
+  end
 end
